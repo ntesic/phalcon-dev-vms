@@ -24,5 +24,6 @@ Vagrant.configure(2) do |config|
 
     config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
 	config.vm.synced_folder "config/", "/srv/config"
-    config.vm.provision "shell", path: "./scripts/setup.sh"
+    config.vm.provision 'main', type: 'shell', path: "./scripts/setup.sh"
+	config.vm.provision 'phalcon' , type: 'shell', path: "./scripts/phalcon.sh"
 end

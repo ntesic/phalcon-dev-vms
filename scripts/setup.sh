@@ -9,12 +9,12 @@ sudo echo "127.0.1.1 ubuntu-xenial" >> /etc/hosts
 #
 echo "============    BEGIN SETUP   ============="
 echo -e "----------------------------------------"
-sudo apt-get install -y language-pack-UTF-8
-sudo apt-get install -y build-essential python-software-properties software-properties-common
+sudo apt-get -qq install -y language-pack-UTF-8 > /dev/null
+sudo apt-get -qq install -y build-essential python-software-properties software-properties-common > /dev/null
 sudo add-apt-repository -y ppa:ondrej/php
 sudo add-apt-repository -y ppa:ondrej/mysql-5.7
-sudo apt-get update
-sudo apt-get install -y re2c libpcre3-dev gcc make
+sudo apt-get -qq update > /dev/null
+sudo apt-get -qq install -y re2c libpcre3-dev gcc make > /dev/null
 
 
 #
@@ -22,26 +22,18 @@ sudo apt-get install -y re2c libpcre3-dev gcc make
 #
 echo -e "----------------------------------------"
 echo "VAGRANT ==> Git"
-apt-get install -y git  > /dev/null
+sudo apt-get -qq install -y git  > /dev/null
 
 echo -e "----------------------------------------"
 echo "VAGRANT ==> tools (mc, htop, unzip etc...)"
-apt-get install -y mc htop unzip grc gcc make libpcre3 libpcre3-dev lsb-core autoconf dos2unix > /dev/null
-
-#
-# Install Apache
-#
-#echo -e "----------------------------------------"
-#echo "VAGRANT ==> Apache"
-#apt-get install -y apache2  > /dev/null
-
+sudo apt-get -qq install -y mc htop unzip grc gcc make libpcre3 libpcre3-dev lsb-core autoconf dos2unix beanstalkd > /dev/null
 
 #
 # Install Nginx
 #
 echo -e "----------------------------------------"
 echo "VAGRANT ==> Nginx"
-apt-get install -y nginx  > /dev/null
+sudo apt-get -qq install -y nginx  > /dev/null
 
 
 #
@@ -132,8 +124,8 @@ sudo service nginx restart > /dev/null
 #
 echo -e "----------------------------------------"
 echo "VAGRANT ==> PHP 7"
-sudo apt-get install -y php7.0-fpm php7.0-cli php7.0-common php7.0-json php7.0-opcache php7.0-mysql php7.0-phpdbg php7.0-mbstring php7.0-gd php-imagick  php7.0-pgsql php7.0-pspell php7.0-recode php7.0-tidy php7.0-dev php7.0-intl php7.0-gd php7.0-curl php7.0-zip php7.0-xml mcrypt memcached php-apcu
-sudo apt-get install -y phpunit
+sudo apt-get -qq install -y php7.0-fpm php7.0-cli php7.0-common php7.0-json php7.0-opcache php7.0-mysql php7.0-phpdbg php7.0-mbstring php7.0-gd php-imagick  php7.0-pgsql php7.0-pspell php7.0-recode php7.0-tidy php7.0-dev php7.0-intl php7.0-gd php7.0-curl php7.0-zip php7.0-xml mcrypt memcached php-apcu
+sudo apt-get -qq install -y phpunit
 #
 # PHP Errors
 #
@@ -147,7 +139,7 @@ sudo sed -i 's/display_errors = Off/display_errors = On/' /etc/php/7.0/fpm/php.i
 service php7.0-fpm restart
 
 # For zephir installtion; the following packages are needed in Ubuntu:
-sudo apt-get install -y gcc make re2c libpcre3-dev php7.0-dev build-essential php7.0-zip
+sudo apt-get -qq install -y gcc make re2c libpcre3-dev php7.0-dev build-essential php7.0-zip
 
 #
 # composer
@@ -162,27 +154,27 @@ mv composer.phar /usr/local/bin/composer
 #
 echo -e "----------------------------------------"
 echo "VAGRANT ==> NPM & NodeJS"
-sudo apt install -y npm
-sudo apt install -y nodejs
+sudo apt -qq install -y npm > /dev/null
+sudo apt -qq install -y nodejs > /dev/null
 
 #
 # redis
 #
 echo -e "----------------------------------------"
 echo "VAGRANT ==> Redis Server"
-apt-get install -y redis-server redis-tools
+apt-get -qq install -y redis-server redis-tools > /dev/null
 cp /etc/redis/redis.conf /etc/redis/redis.bkup.conf
 sed -i 's/bind 127.0.0.1/bind 0.0.0.0/' /etc/redis/redis.conf
 
 
 echo -e "----------------------------------------"
 echo "VAGRANT ==> PHP Redis"
-git clone https://github.com/phpredis/phpredis.git
+git clone https://github.com/phpredis/phpredis.git &> /dev/null
 cd phpredis
 git checkout php7
 phpize
 ./configure
-make && make install
+make -s && make install -s
 cd ..
 rm -rf phpredis
 cd ~/
@@ -202,42 +194,13 @@ service php7.0-fpm restart
 echo -e "----------------------------------------"
 echo "VAGRANT ==> MySQL"
 export DEBIAN_FRONTEND=noninteractive
-apt-get install -y debconf-utils -y > /dev/null
+apt-get -qq install -y debconf-utils -y > /dev/null
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
-apt-get -q install -y mysql-server-5.7 mysql-client-5.7
+sudo apt-get -qq install -y mysql-server-5.7 mysql-client-5.7 > /dev/null
 sed -i 's/bind-address/bind-address = 0.0.0.0#/' /etc/mysql/mysql.conf.d/mysqld.cnf
 mysql -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION; FLUSH PRIVILEGES;"
 service mysql restart
-
-#
-# Phalcpn PHP Framework 3
-#
-echo -e "----------------------------------------"
-echo "VAGRANT ==> Setup Phalcon Framework 3"
-cd ~/
-sudo apt-add-repository ppa:phalcon/stable
-sudo apt-get update
-sudo apt-get install -y php7.0-phalcon
-echo 'extension=phalcon.so' > /etc/php/7.0/mods-available/phalcon.ini
-ln -s /etc/php/7.0/mods-available/phalcon.ini /etc/php/7.0/fpm/conf.d/20-phalcon.ini
-ln -s /etc/php/7.0/mods-available/phalcon.ini /etc/php/7.0/cli/conf.d/20-phalcon.ini
-
-# Install zephir
-echo -e "----------------------------------------"
-echo "VAGRANT ==> Zephir"
-git clone https://github.com/phalcon/zephir
-cd zephir
-./install -c
-
-
-# Install phalcon dev tool 
-echo -e "----------------------------------------"
-echo "VAGRANT ==> Phalcon dev tools"
-git clone https://github.com/phalcon/phalcon-devtools.git
-cd phalcon-devtools
-ln -s ~/phalcon-devtools/phalcon.php /usr/bin/phalcon
-chmod ugo+x /usr/bin/phalcon
 
 # Install phpmyadmin
 echo -e "----------------------------------------"
@@ -256,6 +219,17 @@ echo "VAGRANT ==> PhpMyAdmin"
 	cp /srv/config/phpmyadmin-config/config.inc.php /srv/www/tools/public/database-admin/
 
 #
+# Install Sphix
+#
+echo -e "----------------------------------------"
+echo "VAGRANT ==> Sphinx"
+
+sudo apt-get -qq install -y sphinxsearch > /dev/null
+sudo sed -i 's/START=no/START=yes/g' /etc/default/sphinxsearch
+sudo cp /srv/config/sphinx-config/sphinx.conf /etc/sphinxsearch/sphinx.conf
+sudo systemctl restart sphinxsearch.service
+
+#
 # Install tools
 #
 echo -e "----------------------------------------"
@@ -267,7 +241,7 @@ rm memcached-admin.tar.gz
 
 echo -e "----------------------------------------"
 echo "VAGRANT ==> opcache-status"
-git clone https://github.com/rlerdorf/opcache-status.git public/opcache-status
+git clone https://github.com/rlerdorf/opcache-status.git public/opcache-status &> /dev/null
 
 #
 # Reload servers
@@ -288,8 +262,8 @@ sudo usermod -a -G www-data ubuntu
 #
 #  Cleanup
 #
-apt-get autoremove -y
-apt-get autoclean -y
+apt-get -qq autoremove -y
+apt-get -qq autoclean -y
 
 #
 # COMPLETE
