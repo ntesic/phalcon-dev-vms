@@ -64,6 +64,21 @@ else
 	git pull
 fi
 
+# Install phalcon incubator
+echo -e "----------------------------------------"
+echo "VAGRANT ==> Phalcon incubator"
+
+if [[ ! -d /srv/www/tools/incubator ]]; then
+	echo "Cloning latest Phalcon incubator"
+	cd /srv/www/tools
+	git clone https://github.com/phalcon/incubator.git &> /dev/null
+else 
+	echo "Phalcon incubator already cloned"
+	echo "Pulling latest changes"
+	cd /srv/www/tools/incubator
+	git pull
+fi
+
 #
 # Reload servers
 #
