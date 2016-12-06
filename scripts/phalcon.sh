@@ -33,7 +33,7 @@ echo "VAGRANT ==> Setup Phalcon Framework 3"
 if [[ ! -d /srv/www/tools/cphalcon ]]; then
 	echo "Cloning latest Phalcon from my form"
 	cd /srv/www/tools
-	git clone git@github.com:ntesic/cphalcon.git &> /dev/null
+	git clone https://github.com/ntesic/cphalcon.git &> /dev/null
 	#git clone https://github.com/phalcon/cphalcon &> /dev/null
 	cd cphalcon
 else	
