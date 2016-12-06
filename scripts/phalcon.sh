@@ -31,9 +31,10 @@ echo "VAGRANT ==> Setup Phalcon Framework 3"
 #ln -s /etc/php/7.0/mods-available/phalcon.ini /etc/php/7.0/cli/conf.d/20-phalcon.ini
 
 if [[ ! -d /srv/www/tools/cphalcon ]]; then
-	echo "Cloning latest Phalcon"
+	echo "Cloning latest Phalcon from my form"
 	cd /srv/www/tools
-	git clone https://github.com/phalcon/cphalcon &> /dev/null
+	git clone git@github.com:ntesic/cphalcon.git &> /dev/null
+	#git clone https://github.com/phalcon/cphalcon &> /dev/null
 	cd cphalcon
 else	
 	echo "Phalcon already cloned"
