@@ -10,6 +10,8 @@ Vagrant.configure(2) do |config|
     config.vm.network :forwarded_port, guest: 80, host: 1238
     config.vm.network :forwarded_port, guest: 3306, host: 3306
     config.vm.network :forwarded_port, guest: 6379, host: 6379
+	config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
+	config.vm.network :forwarded_port, guest: 22, host: 2200, auto_correct: true
 
     config.vm.network "private_network", ip: "192.168.50.10"
 
@@ -21,8 +23,10 @@ Vagrant.configure(2) do |config|
     	#config.ssh.private_key_path = "~/.ssh/id_rsa"
 	config.ssh.password = "vagrant"
 	config.ssh.insert_key = false
+	
 
-    config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
+    config.vm.synced_folder "../www/", "/srv/www/", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
+    config.vm.synced_folder "www/tools", "/srv/www/tools", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
 	config.vm.synced_folder "config/", "/srv/config"
     config.vm.provision 'main', type: 'shell', path: "./scripts/setup.sh"
 	config.vm.provision 'phalcon' , type: 'shell', path: "./scripts/phalcon.sh"
